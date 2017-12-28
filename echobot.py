@@ -20,6 +20,12 @@ def get_json_url(url):
 def get_information():
     url=URL+"getme"
     js=get_json_url(url)
+    return js
+
+#get messages sent to the bot
+def get_updates():
+    url=URL+"getUpdates"
+    js=get_json_url(url)
     print (js)
 
-get_information()    
+get_updates()    
