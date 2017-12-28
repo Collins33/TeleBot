@@ -26,6 +26,21 @@ def get_information():
 def get_updates():
     url=URL+"getUpdates"
     js=get_json_url(url)
-    print (js)
+    return js
 
-get_updates()    
+#get the last message sent to the bot
+def get_last_chat_id_and_text(updates):
+    num_updates = len(updates["result"])
+    last_update = num_updates - 1
+    text = updates["result"][last_update]["message"]["text"]
+    chat_id = updates["result"][last_update]["message"]["chat"]["id"]
+    return (text, chat_id)
+
+#send the last message to the bot
+def send_message(text, chat_id):
+    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
+    get_url(url)
+
+
+text, chat = get_last_chat_id_and_text(get_updates())
+send_message(text, chat)
