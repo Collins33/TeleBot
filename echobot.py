@@ -24,10 +24,31 @@ def get_information():
     return js
 
 #get messages sent to the bot
-def get_updates():
+def get_updates(offset=None):
     url=URL+"getUpdates"
+    if offset:
+        url +="?offset={}".format(offset)
     js=get_json_url(url)
     return js
+
+#function that calculates the highest id of the updates we receive from get_updates
+def get_last_update_id(updates):
+    update_ids=[]
+    for update in updates["result"]:
+        update_ids.append(int(update["update_id"]))
+    #return the max id which is the most recent
+    return max(update_ids)
+
+
+#function to send an echo reply for each message we receive
+def echo_all(updates):
+    for update in updates["result"]:
+        try:
+            text=update["message"]["text"]
+            chat=update["message"]["chat"]["id"]
+            send_message(text,chat)
+        except Exception as e:
+            print(e)
 
 #get the last message sent to the bot
 def get_last_chat_id_and_text(updates):
@@ -44,14 +65,13 @@ def send_message(text, chat_id):
 
 #gets the most recent message every 0.5 seconds
 def main():
-    lastText=(None,None)
+    last_update_id=None
     while True:
-        text, chat = get_last_chat_id_and_text(get_updates())
-        if (text,chat) != lastText:
-            send_message(text,chat)
-            #save recently sent reply to lastText variable
-            lastText=(text,chat)
-        time.sleep(0.5)
+        updates=get_updates(last_update_id)
+        if len(updates["result"])>0:
+            last_update_id=get_last_update_id(updates)+1
+            echo_all(updates)
+        time.sleep(0.5)    
 
 
 if __name__ == '__main__':
