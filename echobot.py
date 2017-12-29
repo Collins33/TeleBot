@@ -2,6 +2,7 @@ import json
 from configuration import *
 import requests
 import time
+import urllib
 
 URL="https://api.telegram.org/bot{}/".format(TelegramToken)#url to build the request
 
@@ -60,6 +61,7 @@ def get_last_chat_id_and_text(updates):
 
 #send the last message to the bot
 def send_message(text, chat_id):
+    text=urllib.parse.quote_plus(text)#handle errors of special characters
     url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
     get_url(url)
 
@@ -71,7 +73,7 @@ def main():
         if len(updates["result"])>0:
             last_update_id=get_last_update_id(updates)+1
             echo_all(updates)
-        time.sleep(0.5)    
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
