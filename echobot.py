@@ -1,6 +1,7 @@
 import json
 from configuration import *
 import requests
+import time
 
 URL="https://api.telegram.org/bot{}/".format(TelegramToken)#url to build the request
 
@@ -41,6 +42,26 @@ def send_message(text, chat_id):
     url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
     get_url(url)
 
+#gets the most recent message every 0.5 seconds
+def main():
+    lastText=(None,None)
+    while True:
+        text, chat = get_last_chat_id_and_text(get_updates())
+        if (text,chat) != lastText:
+            send_message(text,chat)
+            #save recently sent reply to lastText variable
+            lastText=(text,chat)
+        time.sleep(0.5)
 
-text, chat = get_last_chat_id_and_text(get_updates())
-send_message(text, chat)
+
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+
+
+# send_message(text, chat)
