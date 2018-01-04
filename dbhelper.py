@@ -17,3 +17,9 @@ class DBHelper:
         args=(item_text, )
         self.conn.execute(stmt,args)
         self.conn.commit()
+#method to delete from the database
+    def delete_item(self,item_text):
+        stmt="DELETE FROM items WHERE description =(?)"
+        args=(item_text, )
+        self.conn.execute(stmt,args)
+        self.conn.commit()
