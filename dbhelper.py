@@ -23,3 +23,7 @@ class DBHelper:
         args=(item_text, )
         self.conn.execute(stmt,args)
         self.conn.commit()
+#method to return list of items from the db
+    def get_items(self):
+        stmt="SELECT description FROM items"
+        return [x[0] for x in self.conn.execute(stmt)]
