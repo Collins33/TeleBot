@@ -3,7 +3,10 @@ from configuration import *
 import requests
 import time
 import urllib
+from dbhelper import DBHelper
 
+#create instance of the dbhelper
+db=DBHelper()
 
 URL="https://api.telegram.org/bot{}/".format(TelegramToken)#url to build the request
 
@@ -42,15 +45,31 @@ def get_last_update_id(updates):
     return max(update_ids)
 
 
-#function to send an echo reply for each message we receive
-def echo_all(updates):
+def handle_updates(updates):
+    #loop through updates and get the result array
     for update in updates["result"]:
         try:
+            #get the text
             text=update["message"]["text"]
+            #get the chat id
             chat=update["message"]["chat"]["id"]
-            send_message(text,chat)
-        except Exception as e:
-            print(e)
+            #get items from the db
+            items=db.get_items()
+            if text in items:
+                #check if they are duplicates
+                db.delete_item(text)
+                items=db.get_items()
+            else:
+                db.add_item(text)
+                #if it is not a duplicate,add to the db
+                items=db.get_items()
+
+            message="\n".join(items)
+            #send the message
+            send_message(message,chat)
+        except KeyError:
+            pass
+
 
 #get the last message sent to the bot
 def get_last_chat_id_and_text(updates):
@@ -68,12 +87,13 @@ def send_message(text, chat_id):
 
 #gets the most recent message every 0.5 seconds
 def main():
+    db.setUp()
     last_update_id=None
     while True:
         updates=get_updates(last_update_id)
         if len(updates["result"])>0:
             last_update_id=get_last_update_id(updates)+1
-            echo_all(updates)
+            handle_updates(updates)
         time.sleep(0.5)
 
 
