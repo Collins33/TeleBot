@@ -66,6 +66,11 @@ def handle_updates(updates):
                 items=db.get_items(chat)
                 keyboard = build_keyboard(items)
                 send_message("Select an item to delete", chat, keyboard)
+
+            elif text == "/start":
+                send_message("welcome to your todo list.Add an item to save and use /done to delete an item",chat)
+            elif text.startswith("/"):
+                continue
             elif text == "/done":
                 keyboard=build_keyboard(items)
                 send_message("Select item to delete",chat,keyboard)
