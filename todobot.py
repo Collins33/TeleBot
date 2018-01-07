@@ -1,8 +1,13 @@
 import json
+
 from configuration import *
+
 import requests
+
 import time
+
 import urllib
+
 from dbhelper import DBHelper
 
 #create instance of the dbhelper
@@ -59,6 +64,10 @@ def handle_updates(updates):
                 #check if they are duplicates
                 db.delete_item(text)
                 items=db.get_items()
+            elif text == "/done":
+                keyboard=build_keyboard(items)
+                send_message("Select item to delete",chat,keyboard)
+
             else:
                 db.add_item(text)
                 #if it is not a duplicate,add to the db
@@ -80,10 +89,25 @@ def get_last_chat_id_and_text(updates):
     return (text, chat_id)
 
 #send the last message to the bot
-def send_message(text, chat_id):
+def send_message(text, chat_id,reply_markup=None):
     text=urllib.parse.quote_plus(text)#handle errors of special characters
     url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
+    if reply_markup:
+        url +="&reply_markup={}".format(reply_markup)
     get_url(url)
+
+#method to add a custom keyboard
+def build_keyboard(items):
+    #construct the list of items
+    keyboard=[[item] for item in items]
+    #build a dictionary
+    reply_markup={"keyboard":keyboard,"one_time_keyboard":True}#keyboard should appear once user has made a choice
+    #convert dictionary into json
+    return json.dumps(reply_markup)
+
+
+
+
 
 #gets the most recent message every 0.5 seconds
 def main():
@@ -99,12 +123,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
 
 
 # send_message(text, chat)
