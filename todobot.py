@@ -59,23 +59,26 @@ def handle_updates(updates):
             #get the chat id
             chat=update["message"]["chat"]["id"]
             #get items from the db
-            items=db.get_items()
+            items=db.get_items(chat)
             if text in items:
                 #check if they are duplicates
-                db.delete_item(text)
-                items=db.get_items()
+                db.delete_item(text,chat)
+                items=db.get_items(chat)
+                keyboard = build_keyboard(items)
+                send_message("Select an item to delete", chat, keyboard)
             elif text == "/done":
                 keyboard=build_keyboard(items)
                 send_message("Select item to delete",chat,keyboard)
 
             else:
-                db.add_item(text)
+                db.add_item(text,chat)
+                items=db.get_items(chat)
                 #if it is not a duplicate,add to the db
                 items=db.get_items()
 
-            message="\n".join(items)
+               message="\n".join(items)
             #send the message
-            send_message(message,chat)
+               send_message(message,chat)
         except KeyError:
             pass
 
