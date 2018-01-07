@@ -74,11 +74,11 @@ def handle_updates(updates):
                 db.add_item(text,chat)
                 items=db.get_items(chat)
                 #if it is not a duplicate,add to the db
-                items=db.get_items()
+                items=db.get_items(chat)
 
-               message="\n".join(items)
+            message="\n".join(items)
             #send the message
-               send_message(message,chat)
+            send_message(message,chat)
         except KeyError:
             pass
 

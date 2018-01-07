@@ -24,8 +24,9 @@ class DBHelper:
         args=(item_text,owner)
         self.conn.execute(stmt,args)
         self.conn.commit()
+        
 #method to return list of items from the db
-    def get_items(self,owner):
-        stmt="SELECT description FROM items WHERE owner = (?)"
-        arg=(owner,)
-        return [x[0] for x in self.conn.execute(stmt,arg)]
+    def get_items(self, owner):
+       stmt = "SELECT description FROM items WHERE owner = (?)"
+       args = (owner, )
+       return [x[0] for x in self.conn.execute(stmt, args)]
